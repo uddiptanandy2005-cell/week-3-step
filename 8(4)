@@ -1,0 +1,133 @@
+import java.util.*;
+
+abstract class Question {
+
+    String correct;
+    String student;
+    double points;
+
+    Question(String correct, String student, double points) {
+        this.correct = correct;
+        this.student = student;
+        this.points = points;
+    }
+
+    abstract double checkAnswer();
+}
+
+class MCQ extends Question {
+
+    MCQ(String correct, String student, double points) {
+        super(correct, student, points);
+    }
+
+    double checkAnswer() {
+
+        if (student.equals(correct))
+            return points;
+
+        return 0;
+    }
+}
+
+class TF extends Question {
+
+    TF(String correct, String student, double points) {
+        super(correct, student, points);
+    }
+
+    double checkAnswer() {
+
+        if (student.equals(correct))
+            return points;
+
+        return 0;
+    }
+}
+
+class Essay extends Question {
+
+    Essay(String correct, String student, double points) {
+        super(correct, student, points);
+    }
+
+    double checkAnswer() {
+
+        String answer = student.toLowerCase();
+
+        String[] keywords =
+            correct.toLowerCase().split(",");
+
+        int count = 0;
+
+        for (String key : keywords) {
+
+            if (answer.contains(key.trim()))
+                count++;
+        }
+
+        if (count >= 2)
+            return points * 0.75;
+
+        if (count == 1)
+            return points * 0.50;
+
+        return 0;
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+        sc.nextLine();
+
+        double total = 0;
+
+        for (int i = 0; i < n; i++) {
+
+            String line = sc.nextLine();
+
+            String[] p = line.split("\"");
+
+            String type = p[0].trim();
+
+            String question = p[1];
+            String correct = p[3];
+            String student = p[5];
+
+            String[] last = p[6].trim().split(" ");
+
+            double points =
+                Double.parseDouble(last[last.length - 1]);
+
+            Question q;
+
+            if (type.equals("MCQ"))
+                q = new MCQ(correct, student, points);
+
+            else if (type.equals("TF"))
+                q = new TF(correct, student, points);
+
+            else
+                q = new Essay(correct, student, points);
+
+            double score = q.checkAnswer();
+
+            System.out.printf(
+                "%s: %.2f%n",
+                type, score
+            );
+
+            total += score;
+        }
+
+        System.out.printf(
+            "Total Score: %.2f%n",
+            total
+        );
+    }
+}
